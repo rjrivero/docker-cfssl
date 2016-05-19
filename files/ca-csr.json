@@ -1,0 +1,19 @@
+{
+    "CN": "Root CA",
+    "key": {
+        "algo": "rsa",
+	"size": 4096
+    },
+    "names": [
+        {
+            "C": "ES",
+            "L": "Madrid",
+            "O": "Test Company",
+            "ST": "Madrid",
+            "OU": "PKI"
+        }
+    ],
+    "ca" {
+        "expiry": "87600h"
+    }
+}
