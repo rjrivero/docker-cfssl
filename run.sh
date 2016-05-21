@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Copy default config, if missing
-if [ ! -f /etc/cfssl/config-ca.json ]; then
+if [ ! -f /etc/cfssl/ca-config.json ]; then
     cp /root/ca-config.json /etc/cfssl/ca-config.json
 fi
 
@@ -20,6 +20,7 @@ fi
 
 # Run service
 exec cfssl serve \
+    -address=0.0.0.0 -port=8888 \
     -config /etc/cfssl/ca-config.json \
     -db-config /etc/cfssl/db-config.json \
     -ca /etc/cfssl/ca.pem \

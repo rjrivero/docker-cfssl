@@ -1,7 +1,7 @@
 {
     "signing": {
         "default": {
-            "expiry": "168h"
+            "expiry": "168h",
         },
         "profiles": {
             "server": {
@@ -20,6 +20,12 @@
                     "client auth"
                 ]
             }
+        }
+    },
+    "auth_keys": {
+        "sample": {
+            "key":  "0123456789ABCDEF0123456789ABCDEF", 
+            "type": "standard"
         }
     }
 }
