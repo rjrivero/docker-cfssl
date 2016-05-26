@@ -1,7 +1,7 @@
 {
     "signing": {
         "default": {
-            "expiry": "168h",
+            "expiry": "168h"
         },
         "profiles": {
             "server": {

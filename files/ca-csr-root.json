@@ -1,5 +1,5 @@
 {
-    "CN": "Subordinate CA",
+    "CN": "Root CA",
     "key": {
         "algo": "rsa",
 	"size": 4096
@@ -12,5 +12,8 @@
             "ST": "Madrid",
             "OU": "Private PKI"
         }
-    ]
+    ],
+    "ca": {
+        "expiry": "262800h"
+    }
 }
