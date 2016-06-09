@@ -1,7 +1,7 @@
 Certification Authority server
 ==============================
 
-Certificate Authority server based on cfssl, including a few scripts to easy configuration of a two-level hierarchy of CAs (root and subordinates).
+Certificate Authority server based on cfssl, including a few scripts to ease configuration of a two-level hierarchy of CAs (root and subordinates).
 
 To build the container:
 
@@ -64,14 +64,14 @@ docker run --rm --name root-ca \
     rjrivero/cfssl csr.sh -root > ca-csr.json
 ```
 
-  - Save the generated csr to **/opt/ca/root/ca-csr.json**, and customize it to match your environment.
+  - Save the generated csr to your root CA's data volume, and customize it to match your environment.
 
 ```
 # Edit the file to your heart's content, then
 sudo mv ca-csr.json /opt/ca/root/
 ```
 
-  - Run the container again with command ***root_ca.sh**, to generate your root private key and certificate
+  - Run the container again with command **root_ca.sh**, to generate your root private key and certificate
 
 ```
 docker run --rm --name root-ca \
@@ -82,14 +82,20 @@ docker run --rm --name root-ca \
 openssl x509 -noout -text -in /opt/ca/root/ca.pem
 ```
 
-  - Now you can start your root CA, in order to have it sign its first subordinate.
+  - Customize the **ca-config.json** file the script has generated in your root CA's data volume, to match your preferred settings
+
+```
+vim /opt/ca/root/config.json
+```
+
+  - Finally you can start your root CA, in order to have it sign its first subordinate.
 
 ```
 # Run the root CA. Notice we don't map the exposed port.
 docker run -d --name root-ca -v /opt/ca/root:/etc/cfssl rjrivero/cfssl
 
 # Take note of the CA's IP address
-export CA_IP=`docker inspect --format '{ .NetworkSettings.IPAddress }' root-ca`
+export CA_IP=`docker inspect --format '{{ .NetworkSettings.IPAddress }}' root-ca`
 ```
 
   - You should now create your subordinate CA. The steps are almost the same, using the sub CA volume:
@@ -111,6 +117,9 @@ docker run --rm --name sub-ca \
 
 # Test the sub-CA certificate
 openssl x509 -noout -text -in /opt/ca/sub/ca.pem
+
+# Edit the sub CA policy configuration file
+vim /opt/ca/sub/ca-config.json
 
 # Start the subordinate CA
 docker run -d --name sub-ca -p 8888:8888 \
