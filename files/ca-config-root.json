@@ -12,7 +12,8 @@
                     "cert sign",
                     "crl sign"
                 ],
-                "is_ca": true
+                "is_ca": true,
+		"ocsp_url": "http://YOUR.ROOT.OCSP.SERVER:8888"
             }
         }
     }

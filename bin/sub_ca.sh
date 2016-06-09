@@ -34,31 +34,36 @@ else
     sed -i "s/\"CN\":.*/\·CN\":${SUB_NAME}/" ca-csr.json
 fi
 
-# Get root CA certificate
-mkdir -p "${CA_PATH}/root-bundle"
-curl -d '{"label": "default"}' ${1}/api/v1/cfssl/info  | \
-    ca_cert.py "${CA_PATH}/root-bundle/ca-root.pem"
+# Create the certificate and sign it with the remote CA
+cfssl gencert -remote "$1" -profile subordinate ca-csr.json \
+    | cfssljson -bare ca
 
-if [ !-f root-bundle/ca-root.pem ]; then
+# Get root CA certificate
+mkdir -p "${CA_PATH}/root_bundle"
+curl -d '{"label": "default"}' ${1}/api/v1/cfssl/info  | \
+    ca_cert.py "${CA_PATH}/root_bundle/ca-root.pem"
+
+if [ ! -f root_bundle/ca-root.pem ]; then
     echo "Unable to retrieve root CA certificate"
     echo "----------"
     echo "Could not get root CA cert from $1"
     exit 3
 fi
 
-# Bundle the ca cert
-rm -f root-bundle.crt
-mkbundle -f root-bundle.crt root-bundle
-mkbundle -f sub-bundle.crt  ca.pem
-# cfssl requires these files to be writeable
-chmod 0644  root-bundle.crt sub-bundle.crt
+# Bundle the root ca cert
+rm -f root_bundle.crt
+mkbundle -f root_bundle.crt root_bundle
 
-# Create the certificate and sign it with the remote CA
-cfssl gencert -remote "$1" -profile subordinate ca-csr.json \
-    | cfssljson -bare ca
+# Bundle the sub ca cert
+mkdir -p "${CA_PATH}/sub_bundle"
+cp "${CA_PATH}/root_bundle/ca-root.pem" "${CA_PATH}/sub_bundle/"
+cp "${CA_PATH}/ca.pem" "${CA_PATH}/sub_bundle/"
+mkbundle -f sub_bundle.crt sub_bundle
 
 # Fix permissions
 chmod 0400 ca-key.pem
 chmod 0444 ca.pem
+# cfssl requires these files to be writeable
+chmod 0644 root_bundle.crt sub_bundle.crt
 
 echo "Certificate generated at ${CA_PATH}/ca.pem"
