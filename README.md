@@ -137,3 +137,18 @@ rm  -rf /opt/ca/root
 ```
 
 Notice that just removing the root CA data with *rm* is not nearly secure enough. All staff related to your Root CA should be performed in an isolated computer, ideally with an encrypted disk, that is turned off when finished. This instructions are just for convenience, must no be considered the pinnacle of security.
+
+Signing a new certificate
+-------------------------
+
+If you want to sing a certificate from your subordinate CA, you can run the **request.sh** script.
+
+```
+docker exec sub-ca request.sh <path/to/request-csr.json> <profile>
+```
+
+Obviously, as the command is run inside the container, the CSR file must be mounted somewhere inside it.
+
+The easiest way to do it would be storing your csr files inside the volume you mount at **/etc/cfssl**. And in fact, the *request.sh* script expects the csr path to be either an absolute path inside the container, or a relative path from /etc/cfssl.
+
+The certificate, key and chain are generated inside the same directory of the csr file.
