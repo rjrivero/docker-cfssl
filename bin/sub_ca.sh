@@ -60,6 +60,9 @@ cp "${CA_PATH}/root_bundle/ca-root.pem" "${CA_PATH}/sub_bundle/"
 cp "${CA_PATH}/ca.pem" "${CA_PATH}/sub_bundle/"
 mkbundle -f sub_bundle.crt sub_bundle
 
+# Build the root CA chain
+cat ca.pem root_bundle/ca-root.pem > ca-chain.pem
+
 # Fix permissions
 chmod 0400 ca-key.pem
 chmod 0444 ca.pem
